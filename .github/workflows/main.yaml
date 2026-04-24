@@ -20,3 +20,8 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install mlflow dagshub xgboost pandas scikit-learn matplotlib seaborn
+
+      - name: Re-train Model
+        run: |
+          cd MLProject
+          python modelling.py

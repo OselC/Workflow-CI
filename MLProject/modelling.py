@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import argparse
 
-def train_model():
+def train_model(n_estimators, learning_rate):
     dagshub.init(repo_owner='OselC', repo_name='Liver-Disease-Detection', mlflow=True)
 
     # Load Data
@@ -26,7 +26,7 @@ def train_model():
     mlflow.set_experiment("XGBoost_Liver_Disease_Tracking")
 
     with mlflow.start_run():
-        model = XGBClassifier()
+        model = XGBClassifier(n_estimators=n_estimators, learning_rate=learning_rate)
         model.fit(x_train, y_train)
 
         # Evaluation

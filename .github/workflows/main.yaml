@@ -19,7 +19,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install "mlflow<3" dagshub xgboost pandas scikit-learn matplotlib seaborn
+          pip install "mlflow==2.22.1" dagshub xgboost pandas scikit-learn matplotlib seaborn
 
       - name: Run MLflow Training
         env:
@@ -33,36 +33,9 @@ jobs:
           python modelling.py
 
           # Save run_id to file for the next step
-          RUN_ID=$(python - <<'PY'
-          import os
-          import mlflow
-          from mlflow.tracking import MlflowClient
-
-          mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
-          exp = mlflow.get_experiment_by_name("XGBoost_Liver_Disease_Tracking")
-          if exp is None:
-              raise SystemExit("Experiment 'XGBoost_Liver_Disease_Tracking' not found")
-
-          client = MlflowClient()
-          runs = client.search_runs(
-              [exp.experiment_id],
-              order_by=["attributes.start_time DESC"],
-              max_results=20,
-          )
-
-          for run in runs:
-              artifacts = [item.path for item in client.list_artifacts(run.info.run_id)]
-              print(run.info.run_id, artifacts)
-              if "model" in artifacts:
-                  print(run.info.run_id)
-                  break
-          else:
-              raise SystemExit("No recent run contains a 'model' artifact")
-          PY
-          )
-              RUN_ID=$(echo "$RUN_ID" | tail -n 1)
-              echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
-              echo "Selected RUN_ID=$RUN_ID"
+          RUN_ID=$(python -c "import os, mlflow; mlflow.set_tracking_uri(os.environ['MLFLOW_TRACKING_URI']); runs = mlflow.search_runs(experiment_names=['XGBoost_Liver_Disease_Tracking'], order_by=['attributes.start_time DESC'], max_results=1); print(runs.iloc[0]['run_id'])")
+          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+          echo "Selected RUN_ID=$RUN_ID"
 
 
       - name: Upload Artifacts to GitHub

@@ -28,7 +28,7 @@ jobs:
         run: |
           # Execute training dan get the newest model run_id
           cd MLProject
-          python MLProject/modelling.py
+          python modelling.py
           # Save run_id to file for the next step
           echo "RUN_ID=$(python -c 'import mlflow; print(mlflow.search_runs(experiment_names=["Liver_Disease_Advanced_Tracking"])["run_id"][0])')" >> $GITHUB_ENV
 

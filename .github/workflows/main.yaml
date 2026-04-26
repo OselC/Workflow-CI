@@ -34,8 +34,9 @@ jobs:
 
           # Save run_id to file for the next step
           EXP_NAME="XGBoost_Liver_Disease_Tracking"
-          RUN_ID=$(python -c "import mlflow; import os; mlflow.set_tracking_uri(os.environ['MLFLOW_TRACKING_URI']); print(mlflow.search_runs(experiment_names=['$EXP_NAME'])['run_id'][0])")
+          RUN_ID=$(python -c "import mlflow, os; mlflow.set_tracking_uri(os.environ['MLFLOW_TRACKING_URI']); runs = mlflow.search_runs(experiment_names=['XGBoost_Liver_Disease_Tracking'], order_by=['attributes.start_time DESC'], max_results=1); print(runs.iloc[0]['run_id'])")
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+
 
       - name: Upload Artifacts to GitHub
         uses: actions/upload-artifact@v4
@@ -58,6 +59,8 @@ jobs:
           MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           export MLFLOW_TRACKING_URI=${{ secrets.MLFLOW_TRACKING_URI }}
+
+          python -c "import os, mlflow; from mlflow.tracking import MlflowClient; mlflow.set_tracking_uri(os.environ['MLFLOW_TRACKING_URI']); print([x.path for x in MlflowClient().list_artifacts(os.environ['RUN_ID'])])"
 
           mlflow models build-docker \
             -m "runs:/${{ env.RUN_ID }}/model" \

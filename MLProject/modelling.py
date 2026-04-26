@@ -37,6 +37,8 @@ def train_model(n_estimators, learning_rate):
         model = XGBClassifier(n_estimators=n_estimators, learning_rate=learning_rate)
         model.fit(x_train, y_train)
 
+        mlflow.xgboost.log_model(model, artifact_path="model")
+
         # Evaluation
         model.score(x_test, y_test)
 

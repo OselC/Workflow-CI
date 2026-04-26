@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import mlflow
 import mlflow.xgboost
@@ -9,7 +10,14 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import argparse
 
 def train_model(n_estimators, learning_rate):
-    dagshub.init(repo_owner='OselC', repo_name='Liver-Disease-Detection', mlflow=True)
+    token = os.getenv("DAGSHUB_USER_TOKEN")
+
+    if token:
+        # Jika di CI, gunakan token agar tidak muncul prompt login
+        dagshub.init(repo_owner='OselC', repo_name='Liver-Disease-Detection', mlflow=True)
+    else:
+        # Jika di lokal, biarkan login seperti biasa
+        dagshub.init(repo_owner='OselC', repo_name='Liver-Disease-Detection', mlflow=True)
 
     # Load Data
     df = pd.read_csv("liver_patient_preprocessing.csv")

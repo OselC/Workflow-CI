@@ -19,7 +19,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install mlflow dagshub xgboost pandas scikit-learn matplotlib seaborn
+          pip install "mlflow<3" dagshub xgboost pandas scikit-learn matplotlib seaborn
 
       - name: Run MLflow Training
         env:

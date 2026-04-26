@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 
 def train_model():
     # Load Data
-    df = pd.read_csv("liver_patient_preprocessing.csv")
+    df = pd.read_csv("../MLProject/liver_patient_preprocessing.csv")
 
     # Split data
     X = df.drop(columns=["Selector"])

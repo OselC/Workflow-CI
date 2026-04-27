@@ -19,7 +19,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install "mlflow==2.22.1" dagshub xgboost pandas scikit-learn matplotlib seaborn
+          pip install "mlflow==2.22.1" "fastapi<0.100" "uvicorn<0.30" dagshub xgboost pandas scikit-learn matplotlib seaborn
 
       - name: Run MLflow Training
         env:

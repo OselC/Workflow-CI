@@ -6,6 +6,8 @@ dependencies:
   - pip
   - pip:
       - mlflow==2.22.1
+      - fastapi<0.100
+      - uvicorn<0.30
       - dagshub
       - xgboost
       - pandas

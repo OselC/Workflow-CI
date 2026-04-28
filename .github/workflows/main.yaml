@@ -29,10 +29,31 @@ jobs:
           MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           # Execute training dan get the newest model run_id
-          mlflow run MLProject/MLProject --no-conda
+          mlflow run MLProject --env-manager local
 
           # Save run_id to file for the next step
-          RUN_ID=$(mlflow runs list --experiment-name "XGBoost_Liver_Disease_Tracking" --max-results 1 | awk 'NR==3 {print $1}')
+          RUN_ID=$(python - <<'PY'
+          from mlflow.tracking import MlflowClient
+
+          experiment_name = "XGBoost_Liver_Disease_Tracking"
+          client = MlflowClient()
+          experiment = client.get_experiment_by_name(experiment_name)
+
+          if experiment is None:
+              raise SystemExit(f"Experiment not found: {experiment_name}")
+
+          runs = client.search_runs(
+              experiment_ids=[experiment.experiment_id],
+              order_by=["attributes.start_time DESC"],
+              max_results=1,
+          )
+
+          if not runs:
+              raise SystemExit(f"No runs found in experiment: {experiment_name}")
+
+          print(runs[0].info.run_id)
+          PY
+          )
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
           echo "Selected RUN_ID=$RUN_ID"
 

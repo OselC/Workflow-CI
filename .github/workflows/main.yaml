@@ -29,7 +29,7 @@ jobs:
           MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           # Execute training dan get the newest model run_id
-          mlflow run MLProject --env-manager local
+          mlflow run MLProject --experiment-name "XGBoost_Liver_Disease_Tracking" --env-manager local
 
           # Save run_id to file for the next step
           RUN_ID=$(python - <<'PY'

@@ -1,4 +1,5 @@
 import os
+from contextlib import nullcontext
 import pandas as pd
 import mlflow
 import mlflow.xgboost
@@ -10,6 +11,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import argparse
 
 def train_model(n_estimators, learning_rate):
+    experiment_name = "XGBoost_Liver_Disease_Tracking"
     token = os.getenv("DAGSHUB_USER_TOKEN")
 
     if token:
@@ -30,10 +32,14 @@ def train_model(n_estimators, learning_rate):
     # Autolog
     mlflow.autolog()
 
-    # MLflow Tracking
-    mlflow.set_experiment("XGBoost_Liver_Disease_Tracking")
+    active_run = mlflow.active_run()
+    run_context = nullcontext(active_run)
 
-    with mlflow.start_run():
+    if active_run is None:
+        mlflow.set_experiment(experiment_name)
+        run_context = mlflow.start_run()
+
+    with run_context:
         model = XGBClassifier(n_estimators=n_estimators, learning_rate=learning_rate)
         model.fit(x_train, y_train)
 

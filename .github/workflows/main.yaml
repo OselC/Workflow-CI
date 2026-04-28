@@ -29,11 +29,10 @@ jobs:
           MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           # Execute training dan get the newest model run_id
-          cd MLProject
-          python modelling.py
+          mlflow run MLProject/MLProject --no-conda
 
           # Save run_id to file for the next step
-          RUN_ID=$(python -c "import os, mlflow; mlflow.set_tracking_uri(os.environ['MLFLOW_TRACKING_URI']); runs = mlflow.search_runs(experiment_names=['XGBoost_Liver_Disease_Tracking'], order_by=['attributes.start_time DESC'], max_results=1); print(runs.iloc[0]['run_id'])")
+          RUN_ID=$(mlflow runs list --experiment-name "XGBoost_Liver_Disease_Tracking" --max-results 1 | awk 'NR==3 {print $1}')
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
           echo "Selected RUN_ID=$RUN_ID"
 

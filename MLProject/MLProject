@@ -1,0 +1,10 @@
+name: Liver_Disease_Classification
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      n_estimators: {type: int, default: 100}
+      learning_rate: {type: float, default: 0.1}
+    command: "python modelling.py --n_estimators {n_estimators} --learning_rate {learning_rate}"
